@@ -341,7 +341,7 @@ marker.on('click', function(e) {
     let nLower = title.toLowerCase();
     let content = ""; 
 
-    // 1. DEFINIRAMO 7 GLAVNIH SLAPOVA (Točno ime i slika)
+    // TVOJA LISTA - točno kako si napisao
     const slapoviSlike = {
         "Zagon": "zagon.jpeg",
         "Bačva": "bačva.jpeg",
@@ -352,29 +352,25 @@ marker.on('click', function(e) {
         "Grjok": "grjok.jpeg"
     };
 
-    // 2. LOGIKA ZA SADRŽAJ POPUPA
     if (slapoviSlike[title]) {
-        // Ako je jedan od 7 slapova: Naslov + Slika + Opis
-        content = `<span class="blue-title">${title}</span>
-                   <img src="img/${slapoviSlike[title]}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.style.display='none'">
-                   <p>${desc}</p>`;
+        // Trik s ?v= osigurava da se slika stvarno učita, a ne vuče stara iz cachea
+        let cacheBuster = new Date().getTime();
+        content = `
+            <span class="blue-title">${title}</span>
+            <img src="${slapoviSlike[title]}?v=${cacheBuster}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.src='${slapoviSlike[title].replace('.jpeg', '.jpg')}'">
+            <p>${desc}</p>`;
     } 
-    else if (nLower.includes("vrh") || nLower.includes("slap")) {
-        // Ako je Vrh ili neki drugi slap koji nije u onih 7: Naslov + Opis (bez slike)
+    else if (nLower.includes("vrh")) {
         content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
     }
     else {
-        // ZA SVE OSTALO (Vela peć, Parking, WC, Odmorišta): Samo Naslov
         content = `<span class="blue-title">${title}</span>`;
     }
 
-    // 3. OTVARANJE POPUPA
-    if (content) {
-        L.popup({ autoClose: true, offset: [0, -10], minWidth: 200 })
-         .setLatLng(latlng)
-         .setContent(content)
-         .openOn(map);
-    }
+    L.popup({ autoClose: true, offset: [0, -10], minWidth: 200 })
+     .setLatLng(latlng)
+     .setContent(content)
+     .openOn(map);
 });        return marker;
                 }
             }).addTo(map);
