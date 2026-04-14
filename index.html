@@ -336,40 +336,41 @@ marker.on('click', function(e) {
     let dist = calculateDistance(latlng);
     showToast(`Udaljenost: ${dist}`);
     
-    let title = p.ime || p.naziv || p.name || "";
+    let title = (p.ime || p.naziv || p.name || "").trim();
     let desc = p.opis || "";
+    let nLower = title.toLowerCase();
     let content = ""; 
 
-    // Ovdje provjeravamo ime točke. Ako se zove kao slap, dodajemo sliku.
-    if (title.includes("Zagon")) {
-        content = `<span class="blue-title">${title}</span><img src="zagon.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
+    // 1. DEFINIRAMO 7 GLAVNIH SLAPOVA (Točno ime i slika)
+    const slapoviSlike = {
+        "Zagon": "zagon.jpg",
+        "Bačva": "bacva.jpg",
+        "Vela draga": "vela_draga.jpg",
+        "Mala draga": "mala_draga.jpg",
+        "Kotli": "kotli.jpg",
+        "Ispod stare pruge": "pruga.jpg",
+        "Grjok": "grjok.jpg"
+    };
+
+    // 2. LOGIKA ZA SADRŽAJ POPUPA
+    if (slapoviSlike[title]) {
+        // Ako je jedan od 7 slapova: Naslov + Slika + Opis
+        content = `<span class="blue-title">${title}</span>
+                   <img src="img/${slapoviSlike[title]}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.style.display='none'">
+                   <p>${desc}</p>`;
     } 
-    else if (title.includes("Bačva")) {
-        content = `<span class="blue-title">${title}</span><img src="bačva.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
-    }
-    else if (title.includes("Vela peć")) {
-        content = `<span class="blue-title">${title}</span><img src="vela peć.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
-    }
-    else if (title.includes("Mala peć")) {
-        content = `<span class="blue-title">${title}</span><img src="mala peć.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
-    }
-    else if (title.includes("Kotli")) {
-        content = `<span class="blue-title">${title}</span><img src="kotli.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
-    }
-    else if (title.includes("Zelenščak")) {
-        content = `<span class="blue-title">${title}</span><img src="zelenščak.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
-    }
-    else if (title.includes("Grjok")) {
-        content = `<span class="blue-title">${title}</span><img src="img/grjok.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
-    }
-    else {
-        // Ako NIJE jedan od tih 7 slapova, samo pokaži naslov i opis (Parking, WC, itd.)
+    else if (nLower.includes("vrh") || nLower.includes("slap")) {
+        // Ako je Vrh ili neki drugi slap koji nije u onih 7: Naslov + Opis (bez slike)
         content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
     }
+    else {
+        // ZA SVE OSTALO (Vela peć, Parking, WC, Odmorišta): Samo Naslov
+        content = `<span class="blue-title">${title}</span>`;
+    }
 
-    // Na kraju otvaramo popup s onim što smo gore odabrali
+    // 3. OTVARANJE POPUPA
     if (content) {
-        L.popup({ autoClose: true, offset: [0, -10] })
+        L.popup({ autoClose: true, offset: [0, -10], minWidth: 200 })
          .setLatLng(latlng)
          .setContent(content)
          .openOn(map);
