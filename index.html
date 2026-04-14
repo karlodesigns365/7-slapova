@@ -366,16 +366,21 @@ marker.on('click', function(e) {
     let nLower = title.toLowerCase();
 
     // Ručno mapiranje slika - najsigurnija metoda
+// Ručno mapiranje slika - usklađeno s tvojom mapom
     let imgFile = "";
-    if (nLower.includes("bacva")) imgFile = "bacva.jpeg";
-    else if (nLower.includes("grjok")) imgFile = "grjok.jpeg";
-    else if (nLower.includes("kotli")) imgFile = "kotli.jpeg";
-    else if (nLower.includes("mala pec")) imgFile = "mala pec.jpeg";
-    else if (nLower.includes("vela pec")) imgFile = "vela pec.jpeg";
-    else if (nLower.includes("zagon")) imgFile = "zagon.jpeg";
-    else if (nLower.includes("zelenscak")) imgFile = "zelenscak.jpeg";
+    
+    // Čistimo naziv od kvačica radi lakše usporedbe ako zatreba, 
+    // ali ovdje ciljamo direktno tvoje nazive iz mape
+    if (nLower.includes("bačva") || nLower.includes("bacva")) imgFile = "bačva.png";
+    else if (nLower.includes("grjok")) imgFile = "grjok.png";
+    else if (nLower.includes("kotli")) imgFile = "kotli.png";
+    else if (nLower.includes("mala peć") || nLower.includes("mala pec")) imgFile = "mala peć.png";
+    else if (nLower.includes("vela peć") || nLower.includes("vela pec")) imgFile = "vela peć.png";
+    else if (nLower.includes("zagon")) imgFile = "zagon.png";
+    else if (nLower.includes("zelenščak") || nLower.includes("zelenscak")) imgFile = "zelenščak.png";
 
-    let imgHtml = imgFile ? `<img src="${imgFile}" class="popup-img" onerror="this.style.display='none'">` : "";
+    // Generiranje HTML-a za sliku
+    let imgHtml = imgFile ? `<img src="${imgFile}" class="popup-img" alt="${title}" onerror="this.style.display='none'">` : "";
 
     // FILTRIRANJE ŠTO SE PRIKAZUJE
     // Provjera za Slapove, Vrhove i Kotli
