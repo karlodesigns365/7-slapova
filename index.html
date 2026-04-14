@@ -343,11 +343,12 @@ marker.on('click', function(e) {
     let dist = calculateDistance(latlng);
     showToast(`Udaljenost: ${dist}`);
     
-    let title = p.ime || p.naziv || p.name || "";
-    let desc = p.opis || "";
+    // Automatsko hvatanje bilo kakvog naslova i opisa iz geojsona
+    let title = p.naziv || p.name || p.ime || p.title || "Lokacija";
+    let desc = p.opis || p.description || "";
     let nLower = title.toLowerCase();
-    
-    // Logika za slike
+
+    // Logika za slike (provjeravamo naslov)
     let imgFile = "";
     if (nLower.includes("bačva")) imgFile = "bačva.png";
     else if (nLower.includes("grjok")) imgFile = "grjok.png";
@@ -358,27 +359,17 @@ marker.on('click', function(e) {
     else if (nLower.includes("zelenščak")) imgFile = "zelenščak.png";
 
     let imgHtml = imgFile ? `<img src="${imgFile}" class="popup-img" onerror="this.style.display='none'">` : "";
-    let content = "";
 
-    // 1. Slapovi i Vrhovi (Naslov + Opis + Slika)
-    if (nLower.includes("slap") || nLower.includes("vrh")) {
-        content = `<span class="blue-title">${title}</span><p>${desc}</p>${imgHtml}`;
-    } 
-    // 2. Restorani i Kotli (Naslov + Opis)
-    else if (nLower.includes("restoran") || nLower.includes("konoba") || nLower.includes("kotli")) {
-        content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
-    }
-    // 3. Odmorišta (Samo Naslov)
-    else if (nLower.includes("odmorište") && title.length > 10) {
-        content = `<span class="blue-title">${title}</span>`;
-    }
+    // Sastavljanje sadržaja - ako nema opisa, stavit ćemo bar naslov da ne bude prazno
+    let content = `<span class="blue-title">${title}</span>`;
+    if (desc) content += `<p style="margin:5px 0;">${desc}</p>`;
+    content += imgHtml;
 
-    if (content) {
-        L.popup({ autoClose: true, offset: [0, -10], maxWidth: 250 })
-         .setLatLng(latlng)
-         .setContent(content)
-         .openOn(map);
-    }
+    // Otvaranje popupa
+    L.popup({ autoClose: true, offset: [0, -10], maxWidth: 250 })
+        .setLatLng(latlng)
+        .setContent(content)
+        .openOn(map);
 });            return marker;
                 }
             }).addTo(map);
