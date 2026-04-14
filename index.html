@@ -27,34 +27,27 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
-        /* GUMB PUT - Smješten dolje desno, prilagođen ekranu */
-        /* Pronađi .route-toggle (ili dodaj ako nemaš) i zamijeni ovim: */
-		.route-toggle {
-		position: absolute; 
-		bottom: 30px; /* Paralelno s legendom */
-		right: 20px; 
-		z-index: 1100; 
-		background: white; 
-		width: 55px; 
-		height: 55px; 
-		border-radius: 18px;
-		display: flex; 
-		justify-content: center; 
-		align-items: center;
-		cursor: pointer; 
-		font-size: 28px; 
-		border: none;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-		transition: 0.3s;
-		}
+        .route-toggle {
+            position: absolute; 
+            bottom: 30px; 
+            right: 20px; 
+            z-index: 1100; 
+            background: white; 
+            width: 55px; 
+            height: 55px; 
+            border-radius: 18px;
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            cursor: pointer; 
+            font-size: 28px; 
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
 
-		.route-toggle.active { 
-		background: #007AFF; 
-		color: white; 
-		}
-	
-		/* Obavezno dodaj ovo da sakriješ bijeli prozor s uputama koji kvari izgled */
-		.leaflet-routing-container { display: none !important; }
+        .route-toggle.active { background: #007AFF; color: white; }
+        .leaflet-routing-container { display: none !important; }
 
         .radar-button {
             position: absolute; top: 70px; left: 12px; z-index: 1000;
@@ -109,20 +102,14 @@
         .leaflet-popup-content-wrapper { border-radius: 16px; padding: 8px; box-shadow: 0 5px 25px rgba(0,0,0,0.15); }
         .blue-title { color: #007AFF; font-size: 18px; font-weight: 800; display: block; margin-bottom: 6px; }
         
-        /* Skrivanje kontrola rute s ekrana */
-        .leaflet-routing-container { display: none !important; }
-		.popup-img {
-		width: 100%;
-		max-width: 250px;
-		height: auto;
-		border-radius: 12px;
-		margin-top: 10px;
-		display: block;
-		}
-		.leaflet-popup-content {
-		max-height: 300px;
-		overflow-y: auto;
-		}
+        /* NOVO: Stil za sliku u prozorčiću */
+        .popup-img {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin-top: 8px;
+            display: block;
+        }
     </style>
 </head>
 <body>
@@ -131,8 +118,8 @@
     <button class="locate-button" onclick="centerToUser()">🎯</button>
     <button id="route-btn" class="route-toggle" onclick="toggleRoute()">🚘</button>
     <button id="radar-btn" class="radar-button" onclick="toggleRadar()">☁️</button>
-    
     <button class="weather-button" onclick="toggleWeather()">☀️</button>
+    
     <div id="weather-panel">
         <div class="w-row">🌡️ Temp: <span id="w-temp" class="w-val">--</span></div>
         <div class="w-row">💨 Vjetar: <span id="w-wind" class="w-val">--</span></div>
@@ -190,33 +177,6 @@
         var radarInterval = null;
         var currentFrame = 0;
         var routingControl = null;
-
-        // Funkcija za put (toggle)
-        function toggleRoute() {
-            const btn = document.getElementById('route-btn');
-            if (routingControl) {
-                map.removeControl(routingControl);
-                routingControl = null;
-                btn.classList.remove('active');
-            } else {
-                if (!userLatLng) {
-                    showToast("GPS lokacija nije pronađena");
-                    return;
-                }
-                btn.classList.add('active');
-                // Cilj je parking na početku staze
-                routingControl = L.Routing.control({
-                    waypoints: [
-                        L.latLng(userLatLng.lat, userLatLng.lng),
-                        L.latLng(45.4010, 13.9622) // Koordinate parkinga/početka
-                    ],
-                    routeWhileDragging: false,
-                    addWaypoints: false,
-                    createMarker: function() { return null; }, // Ne stvara nove markere da ne kvari tvoj plavi
-                    lineOptions: { styles: [{color: '#007AFF', weight: 6, opacity: 0.8}] }
-                }).addTo(map);
-            }
-        }
 
         function stopRadar() {
             if (radarInterval) clearTimeout(radarInterval);
@@ -344,58 +304,50 @@
                         icon: L.divIcon({ className: 'poi-icon', html: emoji, iconSize: [36, 36], iconAnchor: [18, 18] })
                     });
 
-marker.on('click', function(e) {
-    let dist = calculateDistance(latlng);
-    showToast(`Udaljenost: ${dist}`);
-    
-    let title = p.ime || p.naziv || p.name || "";
-    let desc = p.opis || "";
-    let nLower = title.toLowerCase();
-    let content = "";
+                    marker.on('click', function(e) {
+                        let dist = calculateDistance(latlng);
+                        showToast(`Udaljenost: ${dist}`);
+                        
+                        let title = p.ime || p.naziv || p.name || "";
+                        let desc = p.opis || "";
+                        let content = "";
+                        let nLower = title.toLowerCase();
 
-    // MAPIRANJE SLIKA (Točno prema tvojim PNG datotekama)
-    let imgFile = "";
-    if (nLower.includes("bačva")) imgFile = "bačva.png";
-    else if (nLower.includes("grjok")) imgFile = "grjok.png";
-    else if (nLower.includes("kotli")) imgFile = "kotli.png";
-    else if (nLower.includes("mala peć")) imgFile = "mala peć.png";
-    else if (nLower.includes("vela peć")) imgFile = "vela peć.png";
-    else if (nLower.includes("zagon")) imgFile = "zagon.png";
-    else if (nLower.includes("zelenščak")) imgFile = "zelenščak.png";
+                        // DODAVANJE SLIKA ZA SLAPOVE (prema tvojim nazivima datoteka)
+                        let imgFile = "";
+                        if (nLower.includes("bačva")) imgFile = "bačva.png";
+                        else if (nLower.includes("grjok")) imgFile = "grjok.png";
+                        else if (nLower.includes("kotli")) imgFile = "kotli.png";
+                        else if (nLower.includes("mala peć")) imgFile = "mala peć.png";
+                        else if (nLower.includes("vela peć")) imgFile = "vela peć.png";
+                        else if (nLower.includes("zagon")) imgFile = "zagon.png";
+                        else if (nLower.includes("zelenščak")) imgFile = "zelenščak.png";
 
-    let imgHtml = imgFile ? `<img src="${imgFile}" class="popup-img" onerror="this.style.display='none'">` : "";
+                        let imgHtml = imgFile ? `<img src="${imgFile}" class="popup-img" onerror="this.style.display='none'">` : "";
 
-    // LOGIKA FILTRIRANJA
-    // 1. Veliki slapovi (Naziv + Opis + Slika)
-    if (nLower.includes("slap") && !nLower.includes("mali")) {
-        content = `<span class="blue-title">${title}</span><p>${desc}</p>${imgHtml}`;
-    }
-    // 2. Vrhovi (Naziv + Opis)
-    else if (nLower.includes("vrh")) {
-        content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
-    }
-    // 3. Mali slap, Konoba Kotli i specifična Odmorišta (Samo Naziv)
-    else if (nLower.includes("mali slap") || nLower.includes("konoba") || nLower.includes("kotli")) {
-        content = `<span class="blue-title">${title}</span>`;
-    }
-    else if (nLower.includes("odmorište") || nLower.includes("odmoriste")) {
-        if (title.length > 10) {
-            content = `<span class="blue-title">${title}</span>`;
-        }
-    }
+                        // 1. Slapovi i Vrhovi (Naslov + Opis + eventualna slika)
+                        if (nLower.includes("slap") || nLower.includes("vrh")) {
+                            content = `<span class="blue-title">${title}</span><p>${desc}</p>${imgHtml}`;
+                        } 
+                        // 2. Restorani/Konobe (Naslov + Opis)
+                        else if (nLower.includes("restoran") || nLower.includes("konoba") || nLower.includes("kotli")) {
+                            content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
+                        }
+                        // 3. Odmorišta (Samo Naslov)
+                        else if (nLower.includes("odmorište")) {
+                            if (title.length > 10) {
+                                content = `<span class="blue-title">${title}</span>`;
+                            }
+                        }
 
-    // Prikaz popupa samo ako je content prošao filtere
-    if (content) {
-        L.popup({ 
-            autoClose: true, 
-            offset: [0, -10],
-            maxWidth: 260 
-        })
-        .setLatLng(latlng)
-        .setContent(content)
-        .openOn(map);
-    }
-});             return marker;
+                        if (content) {
+                            L.popup({ autoClose: true, offset: [0, -10], maxWidth: 250 })
+                             .setLatLng(latlng)
+                             .setContent(content)
+                             .openOn(map);
+                        }
+                    });
+                    return marker;
                 }
             }).addTo(map);
         });
@@ -412,12 +364,10 @@ marker.on('click', function(e) {
         map.locate({watch: true, enableHighAccuracy: true});
         map.on('locationfound', function(e) {
             userLatLng = e.latlng;
-            // Prvi put leti na lokaciju
             if (!hasCentered) { 
                 map.flyTo(e.latlng, 17); 
                 hasCentered = true; 
             }
-            // Zadržavamo tvoj plavi marker s bijelim rubom
             if (!userMarker) {
                 userMarker = L.marker(e.latlng, { 
                     icon: L.divIcon({ className: '', html: "<div class='gps-marker'></div>", iconSize: [14, 14], iconAnchor: [7, 7] }), 
@@ -432,51 +382,37 @@ marker.on('click', function(e) {
             stopRadar();
             if (userLatLng) map.flyTo(userLatLng, 19, { duration: 1.2 });
         }
-		function toggleRoute() {
-    const btn = document.getElementById('route-btn');
-    
-    // Ako je ruta već prikazana, obriši je
-    if (routingControl) {
-        map.removeControl(routingControl);
-        routingControl = null;
-        btn.classList.remove('active');
-        return;
-    }
 
-    // Provjera imamo li GPS lokaciju korisnika
-    if (!userLatLng) {
-        showToast("GPS lokacija nije pronađena");
-        return;
-    }
+        function toggleRoute() {
+            const btn = document.getElementById('route-btn');
+            if (routingControl) {
+                map.removeControl(routingControl);
+                routingControl = null;
+                btn.classList.remove('active');
+                return;
+            }
+            if (!userLatLng) {
+                showToast("GPS lokacija nije pronađena");
+                return;
+            }
+            btn.classList.add('active');
+            const parkingBuzet = L.latLng(45.3999, 13.9856);
+            routingControl = L.Routing.control({
+                waypoints: [L.latLng(userLatLng.lat, userLatLng.lng), parkingBuzet],
+                router: L.Routing.osrmv1({ serviceUrl: `https://router.project-osrm.org/route/v1` }),
+                show: false,
+                addWaypoints: false,
+                draggableWaypoints: false,
+                createMarker: function() { return null; }, 
+                lineOptions: { styles: [{color: '#007AFF', weight: 7, opacity: 0.7}] }
+            }).addTo(map);
 
-    btn.classList.add('active');
-
-    // LOKACIJA: Parking kod Istarskog vodovoda, Buzet (Početak staze)
-    const parkingBuzet = L.latLng(45.3999, 13.9856);
-
-    routingControl = L.Routing.control({
-        waypoints: [
-            L.latLng(userLatLng.lat, userLatLng.lng),
-            parkingBuzet
-        ],
-        router: L.Routing.osrmv1({
-            serviceUrl: `https://router.project-osrm.org/route/v1`
-        }),
-        show: false,
-        addWaypoints: false,
-        draggableWaypoints: false,
-        createMarker: function() { return null; }, 
-        lineOptions: {
-            styles: [{color: '#007AFF', weight: 7, opacity: 0.7}]
+            routingControl.on('routesfound', function(e) {
+                var routes = e.routes;
+                var bounds = L.latLngBounds(routes[0].coordinates);
+                map.fitBounds(bounds, {padding: [50, 50]});
+            });
         }
-    }).addTo(map);
-
-    routingControl.on('routesfound', function(e) {
-        var routes = e.routes;
-        var bounds = L.latLngBounds(routes[0].coordinates);
-        map.fitBounds(bounds, {padding: [50, 50]});
-    });
-}
     </script>
 </body>
 </html>
