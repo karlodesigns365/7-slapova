@@ -1,0 +1,29 @@
+{
+"type": "FeatureCollection",
+"name": "tocke",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "id": 1, "naziv": "restoran", "opis": null, "ime": "Konoba Kotli" }, "geometry": { "type": "Point", "coordinates": [ 14.016969734439213, 45.368237569392257 ] } },
+{ "type": "Feature", "properties": { "id": 2, "naziv": "parking", "opis": null, "ime": null }, "geometry": { "type": "Point", "coordinates": [ 14.017606059542954, 45.36816114392289 ] } },
+{ "type": "Feature", "properties": { "id": 3, "naziv": "wc", "opis": null, "ime": null }, "geometry": { "type": "Point", "coordinates": [ 14.017691622840195, 45.368193541676213 ] } },
+{ "type": "Feature", "properties": { "id": 4, "naziv": "vrh", "opis": "223 m", "ime": "Obešenjak" }, "geometry": { "type": "Point", "coordinates": [ 14.006071628648076, 45.387819103785809 ] } },
+{ "type": "Feature", "properties": { "id": 5, "naziv": "vrh", "opis": "300 m", "ime": "Veli kuk" }, "geometry": { "type": "Point", "coordinates": [ 14.001454948799454, 45.381038420157452 ] } },
+{ "type": "Feature", "properties": { "id": 6, "naziv": "vrh", "opis": "275 m", "ime": "Mali kuk" }, "geometry": { "type": "Point", "coordinates": [ 13.99880040980597, 45.385576182401834 ] } },
+{ "type": "Feature", "properties": { "id": 16, "naziv": "slap", "opis": "Jedan od najviših slapova na stazi, posebno impresivan nakon kiše kada ima više vode. Pristup zahtijeva oprez zbog strmog i skliskog terena.", "ime": "Grjok" }, "geometry": { "type": "Point", "coordinates": [ 13.9960292621909, 45.379660425341548 ] } },
+{ "type": "Feature", "properties": { "id": 17, "naziv": "slap", "opis": "Manji, ali vrlo slikovit slap okružen zelenilom. Idealan za kratku pauzu na početku staze. Pristup je lagan, ali može biti sklizak nakon kiše.", "ime": "Zagon" }, "geometry": { "type": "Point", "coordinates": [ 13.990435150565904, 45.393742463774238 ] } },
+{ "type": "Feature", "properties": { "id": 18, "naziv": "slap", "opis": "Jedan od atraktivnijih dijelova staze s većom količinom vode i impresivnim stijenama. Dobar za fotografiranje. Teren može biti zahtjevniji i sklizak.", "ime": "Mala peć" }, "geometry": { "type": "Point", "coordinates": [ 14.000487715965168, 45.3916212033308 ] } },
+{ "type": "Feature", "properties": { "id": 19, "naziv": "slap", "opis": "Manje poznat slap, ali vrlo autentičan i divlji. Okružen gustom vegetacijom, pruža osjećaj netaknute prirode. Nije uvijek lako uočljiv.", "ime": "Zelenščak" }, "geometry": { "type": "Point", "coordinates": [ 13.999362777594911, 45.376725137573608 ] } },
+{ "type": "Feature", "properties": { "id": 20, "naziv": "slap", "opis": "Najpoznatija i najatraktivnija lokacija na stazi. Prirodni kameni bazeni i slapovi stvaraju jedinstven krajolik. Odlično mjesto za odmor, fotografiranje i uživanje u prirodi.", "ime": "Kotli" }, "geometry": { "type": "Point", "coordinates": [ 14.016641795751315, 45.368652972315481 ] } },
+{ "type": "Feature", "properties": { "id": 21, "naziv": "slap", "opis": "Slap prepoznatljiv po zanimljivim kamenim formacijama koje podsjećaju na bačvu. Okolina je mirna i pogodna za odmor. Prilaz je relativno jednostavan.", "ime": "Bačva" }, "geometry": { "type": "Point", "coordinates": [ 13.992625445152905, 45.393212328124108 ] } },
+{ "type": "Feature", "properties": { "id": 22, "naziv": "slap", "opis": "Slap prepoznatljiv po zanimljivim kamenim formacijama koje podsjećaju na bačvu. Okolina je mirna i pogodna za odmor. Prilaz je relativno jednostavan.", "ime": "Vela peć" }, "geometry": { "type": "Point", "coordinates": [ 13.995782093297338, 45.393500501747319 ] } },
+{ "type": "Feature", "properties": { "id": 23, "naziv": "odmorište", "opis": null, "ime": "Vela peć" }, "geometry": { "type": "Point", "coordinates": [ 13.99598263597842, 45.393398163050485 ] } },
+{ "type": "Feature", "properties": { "id": 24, "naziv": "odmorište", "opis": null, "ime": null }, "geometry": { "type": "Point", "coordinates": [ 13.989986566298839, 45.394107788349061 ] } },
+{ "type": "Feature", "properties": { "id": 25, "naziv": "odmorište", "opis": null, "ime": null }, "geometry": { "type": "Point", "coordinates": [ 13.987833591883451, 45.395247702490153 ] } },
+{ "type": "Feature", "properties": { "id": 26, "naziv": "odmorište", "opis": null, "ime": null }, "geometry": { "type": "Point", "coordinates": [ 13.988436450958263, 45.395515990560099 ] } },
+{ "type": "Feature", "properties": { "id": 27, "naziv": "sakralna građevina", "opis": null, "ime": null }, "geometry": { "type": "Point", "coordinates": [ 14.017604221934384, 45.368260712256145 ] } },
+{ "type": "Feature", "properties": { "id": 28, "naziv": "sakralna građevina", "opis": null, "ime": null }, "geometry": { "type": "Point", "coordinates": [ 14.018014876744912, 45.375471863546402 ] } },
+{ "type": "Feature", "properties": { "id": 29, "naziv": "sakralna građevina", "opis": null, "ime": null }, "geometry": { "type": "Point", "coordinates": [ 13.992057003245549, 45.382015667758729 ] } },
+{ "type": "Feature", "properties": { "id": 30, "naziv": "sakralna građevina", "opis": null, "ime": null }, "geometry": { "type": "Point", "coordinates": [ 14.016070406410545, 45.367631129575571 ] } },
+{ "type": "Feature", "properties": { "id": 31, "naziv": "mali slap", "opis": null, "ime": "Tombašin" }, "geometry": { "type": "Point", "coordinates": [ 13.988545805953921, 45.395348727917387 ] } }
+]
+}
