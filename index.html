@@ -319,61 +319,83 @@
             return total > 999 ? (total / 1000).toFixed(1) + " km" : Math.round(total) + " m";
         }
 
-        fetch('tocke.geojson').then(res => res.json()).then(data => {
-            L.geoJSON(data, {
-                pointToLayer: function(feature, latlng) {
-                    let p = feature.properties;
-                    let n = (p.naziv || p.name || "").toLowerCase();
-                    let emoji = "📍";
-                    if (n.includes("mali slap")) emoji = "💧";
-                    else if (n.includes("slap")) emoji = "💦";
-                    else if (n.includes("vrh")) emoji = "⛰️";
-                    else if (n.includes("prijelaz") || n.includes("most")) emoji = "↔️";
-                    else if (n.includes("restoran")) emoji = "🍴";
-                    else if (n.includes("odmorište")) emoji = "🪵";
-                    else if (n.includes("sakraln") || n.includes("crkva")) emoji = "⛪";
-                    else if (n.includes("parking")) emoji = "🅿️";
-                    else if (n.includes("wc")) emoji = "🚾";
+fetch('tocke.geojson').then(res => res.json()).then(data => {
+    L.geoJSON(data, {
+        pointToLayer: function(feature, latlng) {
+            let p = feature.properties;
+            let n = (p.naziv || p.name || "").toLowerCase();
+            let emoji = "📍";
+            
+            if (n.includes("mali slap")) emoji = "💧";
+            else if (n.includes("slap")) emoji = "💦";
+            else if (n.includes("vrh")) emoji = "⛰️";
+            else if (n.includes("prijelaz") || n.includes("most")) emoji = "↔️";
+            else if (n.includes("restoran")) emoji = "🍴";
+            else if (n.includes("odmorište")) emoji = "🪵";
+            else if (n.includes("sakraln") || n.includes("crkva")) emoji = "⛪";
+            else if (n.includes("parking")) emoji = "🅿️";
+            else if (n.includes("wc")) emoji = "🚾";
 
-                    let marker = L.marker(latlng, {
-                        icon: L.divIcon({ className: 'poi-icon', html: emoji, iconSize: [36, 36], iconAnchor: [18, 18] })
-                    });
+            let marker = L.marker(latlng, {
+                icon: L.divIcon({ className: 'poi-icon', html: emoji, iconSize: [36, 36], iconAnchor: [18, 18] })
+            });
 
-marker.on('click', function(e) {
-    let dist = calculateDistance(latlng);
-    showToast(`Udaljenost: ${dist}`);
-    
-    // Automatsko hvatanje bilo kakvog naslova i opisa iz geojsona
-    let title = p.naziv || p.name || p.ime || p.title || "Lokacija";
-    let desc = p.opis || p.description || "";
-    let nLower = title.toLowerCase();
+            marker.on('click', function(e) {
+                let dist = calculateDistance(latlng);
+                showToast(`Udaljenost: ${dist}`);
+                
+                let title = p.ime || p.naziv || p.name || "";
+                let desc = p.opis || "";
+                let content = "";
+                let nLower = title.toLowerCase();
 
-    // Logika za slike (provjeravamo naslov)
-    let imgFile = "";
-    if (nLower.includes("bačva")) imgFile = "bačva.png";
-    else if (nLower.includes("grjok")) imgFile = "grjok.png";
-    else if (nLower.includes("kotli")) imgFile = "kotli.png";
-    else if (nLower.includes("mala peć")) imgFile = "mala peć.png";
-    else if (nLower.includes("vela peć")) imgFile = "vela peć.png";
-    else if (nLower.includes("zagon")) imgFile = "zagon.png";
-    else if (nLower.includes("zelenščak")) imgFile = "zelenščak.png";
+                // Definiramo točnih 7 slapova i njihove datoteke
+                const slapoviSlike = {
+                    "zagon": "zagon.jpg",
+                    "bačva": "bačva.jpg",
+                    "vela peć": "vela peć.jpg",
+                    "mala peć": "mala peć.jpg",
+                    "kotli": "kotli.jpg",
+                    "ispod stare kave": "grjok.jpg", // Grjok se često zove "Ispod stare kave" ili samo "Grjok"
+                    "grjok": "grjok.jpg",
+                    "zelenščak": "zelenščak.jpg"
+                };
 
-    let imgHtml = imgFile ? `<img src="${imgFile}" class="popup-img" onerror="this.style.display='none'">` : "";
-
-    // Sastavljanje sadržaja - ako nema opisa, stavit ćemo bar naslov da ne bude prazno
-    let content = `<span class="blue-title">${title}</span>`;
-    if (desc) content += `<p style="margin:5px 0;">${desc}</p>`;
-    content += imgHtml;
-
-    // Otvaranje popupa
-    L.popup({ autoClose: true, offset: [0, -10], maxWidth: 250 })
-        .setLatLng(latlng)
-        .setContent(content)
-        .openOn(map);
-});            return marker;
+                let imgHtml = "";
+                // Provjera je li kliknuti marker jedan od 7 slapova
+                for (let kljuc in slapoviSlike) {
+                    if (nLower.includes(kljuc)) {
+                        imgHtml = `<img src="${slapoviSlike[kljuc]}" class="popup-img" alt="${title}">`;
+                        break;
+                    }
                 }
-            }).addTo(map);
-        });
+
+                // 1. Provjera za Slapove i Vrhove (Naslov + Opis + eventualna Slika)
+                if (nLower.includes("slap") || nLower.includes("vrh")) {
+                    content = `<span class="blue-title">${title}</span><p>${desc}</p>${imgHtml}`;
+                } 
+                // 2. Provjera za Restorane i Kotle (Naslov + Opis + eventualna Slika za Kotle)
+                else if (nLower.includes("restoran") || nLower.includes("konoba") || nLower.includes("kotli")) {
+                    content = `<span class="blue-title">${title}</span><p>${desc}</p>${imgHtml}`;
+                }
+                // 3. Provjera za Odmorišta (Samo Naslov)
+                else if (nLower.includes("odmorište")) {
+                    if (!nLower.endsWith("odmorište") || nLower.length > 10) {
+                        content = `<span class="blue-title">${title}</span>`;
+                    }
+                }
+
+                if (content) {
+                    L.popup({ autoClose: true, offset: [0, -10], maxWidth: 250 })
+                     .setLatLng(latlng)
+                     .setContent(content)
+                     .openOn(map);
+                }
+            });
+            return marker;
+        }
+    }).addTo(map);
+});
 
         fetch('staza.geojson').then(res => res.json()).then(data => {
             stazaLine = data.features[0].geometry.coordinates;
