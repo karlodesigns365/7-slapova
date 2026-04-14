@@ -333,52 +333,39 @@
                     });
 
 marker.on('click', function(e) {
-    // 1. UDALJENOST - Prikazuje se u toastu za svaki klik
     let dist = calculateDistance(latlng);
     showToast(`Udaljenost: ${dist}`);
     
-    let title = (p.ime || p.naziv || p.name || "").trim();
+    let title = p.ime || p.naziv || p.name || "";
     let desc = p.opis || "";
-    let nLower = title.toLowerCase();
-    let content = ""; 
-
-    // TOČAN POPIS SLAPOVA ZA SLIKE
-    const slapoviSlike = {
-        "Zagon": "zagon.jpeg",
-        "Bačva": "bačva.jpeg",
-        "Vela peć": "vela peć.jpeg",
-        "Mala peć": "mala peć.jpeg",
-        "Kotli": "kotli.jpeg",
-        "Zelenščak": "zelenščak.jpeg",
-        "Grjok": "grjok.jpeg"
-    };
-
-    // LOGIKA PRIKAZA POPUPA
+    let content = "";
     
-    // Provjera je li točka po nazivu "odmorište"
-    let jeOdmoriste = nLower.includes("odmorište");
+    // Provjera na malim slovima radi sigurnosti
+    let nLower = title.toLowerCase();
+    let nGeojson = (p.naziv || p.name || "").toLowerCase();
 
-    // A) Ako je jedan od 7 slapova, ali NIJE odmorište (rješava Vela peć problem)
-    if (slapoviSlike[title] && !jeOdmoriste) {
-        content = `<span class="blue-title">${title}</span>
-                   <img src="${slapoviSlike[title]}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.style.display='none'">
-                   <p>${desc}</p>`;
+    // 1. Provjera za Slapove i Vrhove (Naslov + Opis)
+    if (nLower.includes("slap") || nGeojson.includes("slap") || nLower.includes("vrh") || nGeojson.includes("vrh")) {
+        content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
     } 
-    // B) Ako je VRH (Naslov + Opis)
-    else if (nLower.includes("vrh")) {
+    // 2. Provjera za Restorane, Konobe i Kotli (Naslov + Opis)
+    else if (nLower.includes("restoran") || nLower.includes("konoba") || nLower.includes("kotli") || nGeojson.includes("restoran") || nGeojson.includes("konoba")) {
         content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
     }
-    // C) Sve ostalo (WC, Parking, Odmorišta, Sakralni) - content ostaje prazan
-    // tako da se popup ne otvara, ostaje samo toast udaljenosti.
+    // 3. Provjera za Odmorišta (Samo Naslov)
+    else if (nLower.includes("odmorište") || nGeojson.includes("odmorište")) {
+        if (!nLower.endsWith("odmorište") || nLower.length > 10) {
+            content = `<span class="blue-title">${title}</span>`;
+        }
+    }
 
-    // OTVARANJE POPUPA SAMO AKO IMA SADRŽAJA
     if (content) {
-        L.popup({ autoClose: true, offset: [0, -10], minWidth: 200 })
+        L.popup({ autoClose: true, offset: [0, -10] })
          .setLatLng(latlng)
          .setContent(content)
          .openOn(map);
     }
-});        return marker;
+});              return marker;
                 }
             }).addTo(map);
         });
