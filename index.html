@@ -333,8 +333,7 @@
                     });
 
 marker.on('click', function(e) {
-    // 1. OVO JE TVOJ FADE IN/OUT (Toast na dnu/sredini)
-    // On se okida za SVAKI klik na bilo koji marker
+    // 1. UDALJENOST ZA SVE (Toast fade in/out)
     let dist = calculateDistance(latlng);
     showToast(`Udaljenost: ${dist}`);
     
@@ -347,34 +346,35 @@ marker.on('click', function(e) {
     const slikeSlapova = {
         "Zagon": "zagon.jpeg",
         "Bačva": "bačva.jpeg",
-        "Vela peć": "vela peć.jpeg",
-        "Mala peć": "mala peć.jpeg",
+        "Vela peć": "vela peć.jpeg", // Slap
+        "Mala peć": "mala peć.jpeg", // Slap
         "Kotli": "kotli.jpeg",
         "Zelenščak": "zelenščak.jpeg",
         "Grjok": "grjok.jpeg"
     };
 
-    // 3. LOGIKA PRIKAZA POPUPA
+    // 3. STROGA LOGIKA ZA POPUP
     
-    // Provjera je li točka "Odmorište" (gledamo emoji ili naziv iz tvog GeoJSON-a)
+    // Provjeravamo kategoriju iz tvog emojija/naziva
     let jeOdmoriste = nLower.includes("odmorište");
+    let jeVrh = nLower.includes("vrh");
 
+    // SLAPOVI - Provjeravamo je li u listi, ali MORA BITI slap (da izbjegnemo odmorište istog imena)
+    // Ako se tvoja točka za slap u GeoJSON-u zove samo "Vela peć", a odmorište "Odmorište Vela peć", ovo će raditi:
     if (slikeSlapova[title] && !jeOdmoriste) {
-        // SLAPOVI: Naslov + Slika + Opis
         content = `
             <span class="blue-title">${title}</span>
             <img src="${slikeSlapova[title]}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.style.display='none'">
             <p>${desc}</p>`;
     } 
-    else if (nLower.includes("vrh")) {
-        // VRHOVI: Naslov + Opis
+    // VRHOVI - Ispisujemo samo naziv i opis
+    else if (jeVrh) {
         content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
     }
-    // ZA SVE OSTALO (Sakralne, Parking, WC, Odmorišta): 
-    // Ne postavljamo 'content', pa se popup neće ni otvoriti.
-    // Ostat će samo onaj "showToast" s udaljenosti koji si tražio.
 
-    // 4. OTVORI POPUP SAMO AKO IMA SADRŽAJA
+    // 4. OTVARANJE POPUPA 
+    // Ako je content prazan (Parking, WC, Sakralna, Odmorište), popup se NE OTVARA.
+    // Korisnik vidi samo Udaljenost u toastu.
     if (content) {
         L.popup({ autoClose: true, offset: [0, -10], minWidth: 200 })
          .setLatLng(latlng)
