@@ -333,6 +333,8 @@
                     });
 
 marker.on('click', function(e) {
+    // 1. OVO JE TVOJ FADE IN/OUT (Toast na dnu/sredini)
+    // On se okida za SVAKI klik na bilo koji marker
     let dist = calculateDistance(latlng);
     showToast(`Udaljenost: ${dist}`);
     
@@ -341,8 +343,8 @@ marker.on('click', function(e) {
     let nLower = title.toLowerCase();
     let content = ""; 
 
-    // TVOJA LISTA - točno kako si napisao
-    const slapoviSlike = {
+    // 2. TVOJA LISTA 7 SLAPOVA
+    const slikeSlapova = {
         "Zagon": "zagon.jpeg",
         "Bačva": "bačva.jpeg",
         "Vela peć": "vela peć.jpeg",
@@ -352,25 +354,33 @@ marker.on('click', function(e) {
         "Grjok": "grjok.jpeg"
     };
 
-    if (slapoviSlike[title]) {
-        // Trik s ?v= osigurava da se slika stvarno učita, a ne vuče stara iz cachea
-        let cacheBuster = new Date().getTime();
+    // 3. LOGIKA PRIKAZA POPUPA
+    
+    // Provjera je li točka "Odmorište" (gledamo emoji ili naziv iz tvog GeoJSON-a)
+    let jeOdmoriste = nLower.includes("odmorište");
+
+    if (slikeSlapova[title] && !jeOdmoriste) {
+        // SLAPOVI: Naslov + Slika + Opis
         content = `
             <span class="blue-title">${title}</span>
-            <img src="${slapoviSlike[title]}?v=${cacheBuster}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.src='${slapoviSlike[title].replace('.jpeg', '.jpg')}'">
+            <img src="${slikeSlapova[title]}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.style.display='none'">
             <p>${desc}</p>`;
     } 
     else if (nLower.includes("vrh")) {
+        // VRHOVI: Naslov + Opis
         content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
     }
-    else {
-        content = `<span class="blue-title">${title}</span>`;
-    }
+    // ZA SVE OSTALO (Sakralne, Parking, WC, Odmorišta): 
+    // Ne postavljamo 'content', pa se popup neće ni otvoriti.
+    // Ostat će samo onaj "showToast" s udaljenosti koji si tražio.
 
-    L.popup({ autoClose: true, offset: [0, -10], minWidth: 200 })
-     .setLatLng(latlng)
-     .setContent(content)
-     .openOn(map);
+    // 4. OTVORI POPUP SAMO AKO IMA SADRŽAJA
+    if (content) {
+        L.popup({ autoClose: true, offset: [0, -10], minWidth: 200 })
+         .setLatLng(latlng)
+         .setContent(content)
+         .openOn(map);
+    }
 });        return marker;
                 }
             }).addTo(map);
