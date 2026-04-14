@@ -338,23 +338,43 @@ marker.on('click', function(e) {
     
     let title = p.ime || p.naziv || p.name || "";
     let desc = p.opis || "";
-    
-    // Ako nema naslova, nemamo što prikazati
-    if (!title) return;
+    let content = ""; 
 
-    // Kreiramo bazični sadržaj s naslovom
-    let content = `<span class="blue-title">${title}</span>`;
-    
-    // Dodajemo opis samo ako on zbilja postoji u geojsonu
-    if (desc && desc.trim() !== "") {
-        content += `<p>${desc}</p>`;
+    // Ovdje provjeravamo ime točke. Ako se zove kao slap, dodajemo sliku.
+    if (title.includes("Zagon")) {
+        content = `<span class="blue-title">${title}</span><img src="img/zagon.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
+    } 
+    else if (title.includes("Bačva")) {
+        content = `<span class="blue-title">${title}</span><img src="img/bačva.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
+    }
+    else if (title.includes("Vela peć")) {
+        content = `<span class="blue-title">${title}</span><img src="img/vela peć.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
+    }
+    else if (title.includes("Mala peć")) {
+        content = `<span class="blue-title">${title}</span><img src="img/mala peć.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
+    }
+    else if (title.includes("Kotli")) {
+        content = `<span class="blue-title">${title}</span><img src="img/kotli.jpeg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
+    }
+    else if (title.includes("Zelenščak")) {
+        content = `<span class="blue-title">${title}</span><img src="img/zelenščak.jpg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
+    }
+    else if (title.includes("Grjok")) {
+        content = `<span class="blue-title">${title}</span><img src="img/grjok.jpg" style="width:100%; border-radius:12px; margin-top:8px;"><p>${desc}</p>`;
+    }
+    else {
+        // Ako NIJE jedan od tih 7 slapova, samo pokaži naslov i opis (Parking, WC, itd.)
+        content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
     }
 
-    L.popup({ autoClose: true, offset: [0, -10] })
-     .setLatLng(latlng)
-     .setContent(content)
-     .openOn(map);
-});              return marker;
+    // Na kraju otvaramo popup s onim što smo gore odabrali
+    if (content) {
+        L.popup({ autoClose: true, offset: [0, -10] })
+         .setLatLng(latlng)
+         .setContent(content)
+         .openOn(map);
+    }
+});        return marker;
                 }
             }).addTo(map);
         });
