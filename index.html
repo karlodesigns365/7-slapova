@@ -338,33 +338,22 @@ marker.on('click', function(e) {
     
     let title = p.ime || p.naziv || p.name || "";
     let desc = p.opis || "";
-    let content = "";
     
-    // Provjera na malim slovima radi sigurnosti
-    let nLower = title.toLowerCase();
-    let nGeojson = (p.naziv || p.name || "").toLowerCase();
+    // Ako nema naslova, nemamo što prikazati
+    if (!title) return;
 
-    // 1. Provjera za Slapove i Vrhove (Naslov + Opis)
-    if (nLower.includes("slap") || nGeojson.includes("slap") || nLower.includes("vrh") || nGeojson.includes("vrh")) {
-        content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
-    } 
-    // 2. Provjera za Restorane, Konobe i Kotli (Naslov + Opis)
-    else if (nLower.includes("restoran") || nLower.includes("konoba") || nLower.includes("kotli") || nGeojson.includes("restoran") || nGeojson.includes("konoba")) {
-        content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
-    }
-    // 3. Provjera za Odmorišta (Samo Naslov)
-    else if (nLower.includes("odmorište") || nGeojson.includes("odmorište")) {
-        if (!nLower.endsWith("odmorište") || nLower.length > 10) {
-            content = `<span class="blue-title">${title}</span>`;
-        }
+    // Kreiramo bazični sadržaj s naslovom
+    let content = `<span class="blue-title">${title}</span>`;
+    
+    // Dodajemo opis samo ako on zbilja postoji u geojsonu
+    if (desc && desc.trim() !== "") {
+        content += `<p>${desc}</p>`;
     }
 
-    if (content) {
-        L.popup({ autoClose: true, offset: [0, -10] })
-         .setLatLng(latlng)
-         .setContent(content)
-         .openOn(map);
-    }
+    L.popup({ autoClose: true, offset: [0, -10] })
+     .setLatLng(latlng)
+     .setContent(content)
+     .openOn(map);
 });              return marker;
                 }
             }).addTo(map);
