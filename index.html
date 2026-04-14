@@ -333,7 +333,7 @@
                     });
 
 marker.on('click', function(e) {
-    // 1. UDALJENOST ZA SVE (Toast fade in/out)
+    // 1. UDALJENOST - Prikazuje se u toastu za svaki klik
     let dist = calculateDistance(latlng);
     showToast(`Udaljenost: ${dist}`);
     
@@ -342,39 +342,36 @@ marker.on('click', function(e) {
     let nLower = title.toLowerCase();
     let content = ""; 
 
-    // 2. TVOJA LISTA 7 SLAPOVA
-    const slikeSlapova = {
+    // TOČAN POPIS SLAPOVA ZA SLIKE
+    const slapoviSlike = {
         "Zagon": "zagon.jpeg",
         "Bačva": "bačva.jpeg",
-        "Vela peć": "vela peć.jpeg", // Slap
-        "Mala peć": "mala peć.jpeg", // Slap
+        "Vela peć": "vela peć.jpeg",
+        "Mala peć": "mala peć.jpeg",
         "Kotli": "kotli.jpeg",
         "Zelenščak": "zelenščak.jpeg",
         "Grjok": "grjok.jpeg"
     };
 
-    // 3. STROGA LOGIKA ZA POPUP
+    // LOGIKA PRIKAZA POPUPA
     
-    // Provjeravamo kategoriju iz tvog emojija/naziva
+    // Provjera je li točka po nazivu "odmorište"
     let jeOdmoriste = nLower.includes("odmorište");
-    let jeVrh = nLower.includes("vrh");
 
-    // SLAPOVI - Provjeravamo je li u listi, ali MORA BITI slap (da izbjegnemo odmorište istog imena)
-    // Ako se tvoja točka za slap u GeoJSON-u zove samo "Vela peć", a odmorište "Odmorište Vela peć", ovo će raditi:
-    if (slikeSlapova[title] && !jeOdmoriste) {
-        content = `
-            <span class="blue-title">${title}</span>
-            <img src="${slikeSlapova[title]}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.style.display='none'">
-            <p>${desc}</p>`;
+    // A) Ako je jedan od 7 slapova, ali NIJE odmorište (rješava Vela peć problem)
+    if (slapoviSlike[title] && !jeOdmoriste) {
+        content = `<span class="blue-title">${title}</span>
+                   <img src="${slapoviSlike[title]}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.style.display='none'">
+                   <p>${desc}</p>`;
     } 
-    // VRHOVI - Ispisujemo samo naziv i opis
-    else if (jeVrh) {
+    // B) Ako je VRH (Naslov + Opis)
+    else if (nLower.includes("vrh")) {
         content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
     }
+    // C) Sve ostalo (WC, Parking, Odmorišta, Sakralni) - content ostaje prazan
+    // tako da se popup ne otvara, ostaje samo toast udaljenosti.
 
-    // 4. OTVARANJE POPUPA 
-    // Ako je content prazan (Parking, WC, Sakralna, Odmorište), popup se NE OTVARA.
-    // Korisnik vidi samo Udaljenost u toastu.
+    // OTVARANJE POPUPA SAMO AKO IMA SADRŽAJA
     if (content) {
         L.popup({ autoClose: true, offset: [0, -10], minWidth: 200 })
          .setLatLng(latlng)
