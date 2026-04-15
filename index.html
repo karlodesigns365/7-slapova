@@ -468,31 +468,50 @@ marker.on('click', function(e) {
 let deferredPrompt;
 const installBtn = document.getElementById('install-btn');
 
+// --- ANDROID LOGIKA ---
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Spriječava Chrome da sam izbaci upit
+    // Spriječi Chrome da sam izbaci prozor
     e.preventDefault();
     deferredPrompt = e;
-    // Pokaži naš gumb
+    // Pokaži gumb samo ako instalacija ima smisla
     installBtn.style.display = 'flex';
+});
 
-    installBtn.addEventListener('click', () => {
-        // Pokreni instalaciju
+installBtn.addEventListener('click', () => {
+    // Ako je Android (deferredPrompt postoji)
+    if (deferredPrompt) {
         deferredPrompt.prompt();
         deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
-                console.log('Korisnik prihvatio instalaciju');
+                installBtn.style.display = 'none';
             }
-            installBtn.style.display = 'none';
+            deferredPrompt = null;
         });
-    });
+    } else {
+        // Ako je iPhone ili već instalirano
+        handleIosInstall();
+    }
 });
 
-// Posebna poruka za iPhone korisnike jer Safari ne podržava gumb
-if (!window.matchMedia('(display-mode: standalone)').matches && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
+// --- iPHONE LOGIKA ---
+function handleIosInstall() {
+    // Provjera je li iPhone
+    const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+    if (isIos && !isStandalone) {
+        // Umjesto alert-a, koristimo custom poruku koja ne blokira preglednik
+        showToast("Instalacija: Klikni na 'Podijeli' (kvadrat sa strelicom) pa 'Dodaj na početni zaslon'");
+    } else if (isStandalone) {
+        showToast("Aplikacija je već instalirana!");
+    } else {
+        showToast("Koristite opcije preglednika za instalaciju.");
+    }
+}
+
+// Provjera za iPhone pri učitavanju da se gumb uopće pojavi
+if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
     installBtn.style.display = 'flex';
-    installBtn.onclick = () => {
-        alert("Za instalaciju na iPhoneu: Klikni na 'Share' gumb (kvadrat sa strelicom) u Safariju i odaberi 'Add to Home Screen'.");
-    };
 }
     </script>
 </body>
