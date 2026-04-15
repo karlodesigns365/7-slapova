@@ -340,15 +340,31 @@ marker.on('click', function(e) {
     let desc = p.opis || "";
     let content = "";
     
-    // Provjera na malim slovima radi sigurnosti
     let nLower = title.toLowerCase();
     let nGeojson = (p.naziv || p.name || "").toLowerCase();
 
-    // 1. Provjera za Slapove i Vrhove (Naslov + Opis)
+    // MAPA SLIKA - Ključ mora biti točno ime iz GeoJSON-a (pazi na kvačice!)
+    const slikeSlapova = {
+        "Zagon": "zagon.jpeg",
+        "Bačva": "bačva.jpeg",
+        "Vela peć": "vela peć.jpeg",
+        "Mala peć": "mala peć.jpeg",
+        "Kotli": "kotli.jpeg",
+        "Zelenščak": "zelenščak.jpeg",
+        "Grjok": "grjok.jpeg"
+    };
+
+    // 1. Provjera za Slapove i Vrhove
     if (nLower.includes("slap") || nGeojson.includes("slap") || nLower.includes("vrh") || nGeojson.includes("vrh")) {
-        content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
+        // --- NOVO: Provjera ima li ovaj specifični slap sliku, a da nije odmorište ---
+        let imgTag = "";
+        if (slikeSlapova[title] && !nLower.includes("odmorište")) {
+            imgTag = `<img src="${slikeSlapova[title]}" style="width:100%; border-radius:12px; margin:8px 0; display:block;" onerror="this.style.display='none'">`;
+        }
+        
+        content = `<span class="blue-title">${title}</span>${imgTag}<p>${desc}</p>`;
     } 
-    // 2. Provjera za Restorane, Konobe i Kotli (Naslov + Opis)
+    // 2. Provjera za Restorane, Konobe i Kotli
     else if (nLower.includes("restoran") || nLower.includes("konoba") || nLower.includes("kotli") || nGeojson.includes("restoran") || nGeojson.includes("konoba")) {
         content = `<span class="blue-title">${title}</span><p>${desc}</p>`;
     }
@@ -360,7 +376,7 @@ marker.on('click', function(e) {
     }
 
     if (content) {
-        L.popup({ autoClose: true, offset: [0, -10] })
+        L.popup({ autoClose: true, offset: [0, -10], minWidth: 200 })
          .setLatLng(latlng)
          .setContent(content)
          .openOn(map);
