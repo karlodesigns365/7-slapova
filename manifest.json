@@ -1,0 +1,20 @@
+{
+  "short_name": "7 Slapova",
+  "name": "Staza sedam slapova - Vodič",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#007AFF",
+  "background_color": "#ffffff"
+}

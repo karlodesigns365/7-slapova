@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Staza sedam slapova</title>
+	<link rel="manifest" href="manifest.json">
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -119,6 +120,7 @@
     <button class="locate-button" onclick="centerToUser()">🎯</button>
     <button id="route-btn" class="route-toggle" onclick="toggleRoute()">🚘</button>
     <button id="radar-btn" class="radar-button" onclick="toggleRadar()">☁️</button>
+	<button id="install-btn" class="radar-button" style="top: 180px; display: none;">📲</button>
     
     <button class="weather-button" onclick="toggleWeather()">☀️</button>
     <div id="weather-panel">
@@ -462,6 +464,35 @@ marker.on('click', function(e) {
         var bounds = L.latLngBounds(routes[0].coordinates);
         map.fitBounds(bounds, {padding: [50, 50]});
     });
+}
+let deferredPrompt;
+const installBtn = document.getElementById('install-btn');
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Spriječava Chrome da sam izbaci upit
+    e.preventDefault();
+    deferredPrompt = e;
+    // Pokaži naš gumb
+    installBtn.style.display = 'flex';
+
+    installBtn.addEventListener('click', () => {
+        // Pokreni instalaciju
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('Korisnik prihvatio instalaciju');
+            }
+            installBtn.style.display = 'none';
+        });
+    });
+});
+
+// Posebna poruka za iPhone korisnike jer Safari ne podržava gumb
+if (!window.matchMedia('(display-mode: standalone)').matches && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
+    installBtn.style.display = 'flex';
+    installBtn.onclick = () => {
+        alert("Za instalaciju na iPhoneu: Klikni na 'Share' gumb (kvadrat sa strelicom) u Safariju i odaberi 'Add to Home Screen'.");
+    };
 }
     </script>
 </body>
